@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Use Case Sandbox v2</title>
+  <title>AI Use Case Sandbox</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23173f56'/%3E%3Cstop offset='1' stop-color='%230f75b0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='18' fill='url(%23g)'/%3E%3Ctext x='50' y='66' font-family='Arial' font-weight='900' font-size='48' text-anchor='middle' fill='white'%3EAI%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
@@ -277,7 +277,7 @@ details.hint summary { cursor: pointer; color: var(--blue); font-weight: 700; }
       </div>
     </div>
     <div class="ws-name" id="header-ws"></div>
-    <p class="tagline">Describe it. Ask the AI to poke holes. Decide. Use your own approved AI tool.</p>
+    <p class="tagline">Huddle. Interrogate. Agree. Use your own approved AI tool, then capture the team's use cases.</p>
   </header>
 
   <nav class="tabs" id="tabs" aria-label="Sections" hidden>
@@ -290,13 +290,10 @@ details.hint summary { cursor: pointer; color: var(--blue); font-weight: 700; }
   <main id="main" tabindex="-1"></main>
 
   <footer class="app-footer">
-    Progress saves automatically. AI responses are input for your team's judgment, not decisions. · Version 2
+    Progress saves automatically. AI responses are input for your team's judgment, not decisions.
   </footer>
   <script>
 const __mods = {};
-// Microsoft Form for user feedback. Replace with the real URL when it is available.
-const FEEDBACK_URL = 'PLACEHOLDER_FEEDBACK_FORM_URL';
-const FEEDBACK_LINK = `<p class="help-text" style="margin-top:14px"><a href="${FEEDBACK_URL}" target="_blank" rel="noopener">Tell us how this worked for you.</a></p>`;
 // The browser has no disk: a localStorage-backed stand-in for lib/store.js.
 __mods['./store'] = (function () {
   const KEY = 'ucs_standalone_db';
@@ -335,6 +332,7 @@ const BUCKETS = [
 ];
 
 const GOAL_TYPES = ['Automation', 'Efficiency', 'Standardization'];
+const AI_CAPABILITIES = ['Knowledge Retrieval', 'Enterprise Search', 'Question Answering', 'Summarization', 'Content Generation', 'Classification', 'Data Extraction', 'Entity Recognition', 'Translation', 'Recommendation Generation', 'Workflow Automation', 'Multi-Step Reasoning', 'Knowledge Agent', 'Analytics & Reporting', 'External System Integration', 'Other'];
 const OUTCOME_TYPES = ['Time savings', 'Greater satisfaction', 'Increased throughput', 'Better consistency or quality', 'Lower cost', 'Other'];
 
 const RISK_PROMPTS = [
@@ -372,15 +370,16 @@ const PHASES = [
       intro: 'Describe the process as it works today, not as it should work. Rough is fine.',
       fields: [
         { id: 'processName', label: 'Process name', type: 'text', placeholder: 'e.g., Responding to public records requests' },
+        { id: 'businessArea', label: 'Business area', type: 'text', placeholder: 'e.g., Records Management, Licensing, Customer Service' },
         { id: 'people', label: 'People involved', type: 'textarea', help: 'Roles, teams, and anyone outside the agency who touches the work.' },
         { id: 'systems', label: 'Systems and tools', type: 'textarea', help: 'Software, shared drives, email inboxes, paper, spreadsheets.' },
-        { id: 'steps', label: 'Process steps, in order', type: 'textarea', rows: 8, help: 'One step per line, from trigger to finish. Tip: paste in your SOP, checklist, or process steps if you have them. The more specific the steps, the better the result.' },
+        { id: 'steps', label: 'Process steps, in order', type: 'textarea', rows: 8, help: 'One step per line, from trigger to finish.' },
         { id: 'volume', label: 'Volume and effort', type: 'textarea', help: 'How often does it run, how many items, how much staff time?' },
         { id: 'pain', label: 'Where the pain is', type: 'textarea', help: 'Which steps are slow, repetitive, error-prone, or inconsistent?' },
         { id: 'goalTypes', label: 'What are we seeking?', type: 'chips', multi: true, options: GOAL_TYPES, help: 'Choose all that apply.' }
       ]
     },
-    interrogate: { intro: 'The AI will ask you 3 questions, one at a time. Answer each in the chat, then it plays back the process and points at the steps with the most friction.' },
+    interrogate: { intro: 'Have the AI play back the process, ask what you left out, and point at the steps with the most friction.' },
     consensus: {
       label: 'The agreed process description and improvement goal',
       help: 'The corrected process, the pain point you are addressing, and whether the goal is automation, efficiency, or standardization.'
@@ -391,18 +390,22 @@ const PHASES = [
     title: 'Describe the AI opportunity',
     goal: 'Identify the specific parts of the process where AI could help, and detail how it would work: inputs, what the AI does, outputs, and how it fits with the human-led steps.',
     huddle: {
-      intro: 'Describe in detail how you envision an AI system that addresses the pain point. Fill in the four boxes.',
+      intro: 'Describe in detail how you envision an AI system that addresses the pain point.',
       fields: [
-        { id: 'inputs', label: 'Box 1 · Data inputs', type: 'textarea', help: 'Describe the data inputs that will go into the AI system.' },
-        { id: 'actions', label: 'Box 2 · What the AI does', type: 'textarea', help: 'What steps will it take, in what order? Think back to the process description.' },
-        { id: 'outputs', label: 'Box 3 · Outputs', type: 'textarea', help: 'What outputs will the system generate?' },
-        { id: 'handoff', label: 'Box 4 · What happens next', type: 'textarea', help: 'Where do the outputs go? Which people or systems take them in?' }
+        { id: 'actions', label: 'Summary description', type: 'textarea', help: 'What will the AI do? What steps will it take, in what order? Think back to the process description.' },
+        { id: 'inputs', label: 'Input prompts', type: 'textarea', help: 'Describe the inputs and prompts that will go into the AI system.' },
+        { id: 'refData', label: 'Reference data sources', type: 'textarea', help: 'Documents, databases, policies, or knowledge sources the AI will draw on.' },
+        { id: 'outputs', label: 'Expected outputs', type: 'textarea', help: 'What outputs will the system generate, and where do they go next?' },
+        { id: 'boundary', label: 'What is the boundary of this AI use case?', type: 'textarea', help: 'Describe: what the AI should do; what the AI should not do; known limitations; activities that remain outside the AI solution. Example: "The AI may draft responses and locate relevant information but may not approve actions, make final decisions, or perform policy interpretation."' },
+        { id: 'humanLed', label: 'What parts of the process will remain human-led?', type: 'textarea', help: 'Examples: final approvals, exception handling, policy interpretation, compliance decisions, escalations, quality assurance reviews, customer interactions.' },
+        { id: 'capabilities', label: 'What AI capabilities or functionalities are required?', type: 'chips', multi: true, options: AI_CAPABILITIES, help: 'Identify the AI capabilities needed to implement this use case. Choose all that apply.' },
+        { id: 'capabilitiesOther', label: 'Additional capability requirements', type: 'textarea', rows: 3, help: 'Anything else the solution needs, including functionality that may go beyond current AI tools.' }
       ]
     },
-    interrogate: { intro: 'The AI asks 3 questions, one at a time. Answer each in the chat. After the third, it lists the gaps and what to change. You write the final statement in Step 3.' },
+    interrogate: { intro: 'Ask the AI what you are missing: gaps in the data, the process, or the human review of outputs.' },
     consensus: {
-      label: 'Rewrite your opportunity statement using what you learned.',
-      help: 'Write it in your own words, including any changes you made in response to the questions. This is the final AI opportunity.'
+      label: 'The final AI opportunity',
+      help: 'Incorporate any changes you made in response to the pressure test.'
     }
   },
   {
@@ -450,7 +453,7 @@ const PHASES = [
 
 function getPhase(id) { return PHASES.find((p) => p.id === id); }
 
-module.exports = { PHASES, BUCKETS, GOAL_TYPES, OUTCOME_TYPES, RISK_PROMPTS, getPhase };
+module.exports = { PHASES, BUCKETS, GOAL_TYPES, AI_CAPABILITIES, OUTCOME_TYPES, RISK_PROMPTS, getPhase };
 
 return module.exports;
 })();
@@ -468,12 +471,6 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
   const v = (s) => (s && String(s).trim()) || BLANK;
   const list = (a) => (Array.isArray(a) && a.length ? a.join(', ') : '');
 
-  // Standard closing lines: a set length per phase, and no echoing the input back.
-  const CARRY = 'Carry forward the stated objective. Do not restate the input or add explanation about the process.';
-  const concise = (limit) => `Be concise. Prioritize the most important points. Keep your response to ${limit}. ${CARRY}`;
-  // Used wherever the AI is asked to report challenges or risks.
-  const FINDINGS = 'For each one, give the part of our description it relates to, the supporting evidence, and a measure or specific detail where applicable.';
-
   // ctx: { team, ideas (selected idea texts), fields (this phase), uc (use case state: phases) }
   function consensusOf(uc, phaseId) {
     return uc && uc.phases && uc.phases[phaseId] ? (uc.phases[phaseId].consensus || '').trim() : '';
@@ -485,8 +482,7 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
       const quoted = ideas.length ? ideas.join('; ') : `"${BLANK}"`;
       return `We are ${ctx.team || 'a government agency'}, considering adopting AI to solve several problems: ${quoted}. ` +
         'Help us think through which are the most appropriate to delegate to AI by asking some questions that get at ' +
-        'alignment to our mission, service delivery potential, and contribution to staff workload.\n\n' +
-        concise('3 to 5 bullets');
+        'alignment to our mission, service delivery potential, and contribution to staff workload.';
     },
 
     p2(ctx) {
@@ -499,12 +495,9 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
         `Volume and effort: ${v(f.volume)}\n` +
         `Where the pain is: ${v(f.pain)}\n` +
         `What we are seeking: ${v(list(f.goalTypes))}\n\n` +
-        'First, ask me 3 questions in total about anything unclear or missing. Ask one question at a time and wait for my ' +
-        'answer before asking the next. Make each question independent, aimed at assumptions, blind spots, or perspectives ' +
-        'we have not considered, and do not restate what I have already told you.\n\n' +
-        'After my third answer, restate the process as numbered steps, identify the two or three steps with the most ' +
-        'friction, and say whether our goal looks more like automation, efficiency, or standardization, and why.\n\n' +
-        `Be concise. Prioritize the most important points. Keep your response to 5 bullets or fewer after my third answer. ${CARRY.replace('Do not restate the input', 'Do not repeat my input back beyond the numbered steps')}`;
+        'First, ask us up to five clarifying questions about anything unclear or missing. Then restate the process as ' +
+        'numbered steps, identify the two or three steps with the most friction, and say whether our goal looks more like ' +
+        'automation, efficiency, or standardization, and why.';
     },
 
     p3(ctx) {
@@ -513,18 +506,14 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
       const process = consensusOf(ctx.uc, 'p2') || (p2 && p2.fields && (p2.fields.pain || '').trim()) || BLANK;
       return `The process and pain point we want to address:\n${process}\n\n` +
         `We are proposing to address this pain point by creating an AI-enabled process that takes ${v(f.inputs)}, ` +
-        `asks the AI to ${v(f.actions)}, and generates ${v(f.outputs)}. The outputs will then be ${v(f.handoff)}.\n\n` +
-        'Pressure-test this opportunity by asking me 3 questions in total. Ask one question at a time and wait for my answer ' +
-        'before asking the next. Make each question independent and aimed at assumptions, blind spots, or perspectives we ' +
-        'have not considered, such as gaps in the data, the AI steps, or the human review of outputs. Do not restate the ' +
-        'context I have already given.\n\n' +
-        'Do not write or rewrite the opportunity statement. I will write it myself.\n\n' +
-        'After my third answer, give me a short read-out. For each of my three answers, say in one line whether it fully ' +
-        'addresses the concern or leaves a gap, and name the gap. Then list the 2 or 3 most important things I should ' +
-        'change, add, or decide before I finalize the opportunity, each with a concrete suggestion for how to do it. ' +
-        'Finish by offering to ask the same kind of questions about our specific request types or work categories, ' +
-        'keeping my earlier answers in mind.\n\n' +
-        concise('2 sentences per question, and 3 to 5 bullets for the read-out after my third answer');
+        `using these reference data sources: ${v(f.refData)}. The AI will ${v(f.actions)}, and generates ${v(f.outputs)}.\n\n` +
+        `Boundary of the use case: ${v(f.boundary)}\n` +
+        `Parts of the process that remain human-led: ${v(f.humanLed)}\n` +
+        `AI capabilities required: ${v([list(f.capabilities), (f.capabilitiesOther || '').trim()].filter(Boolean).join('; '))}\n\n` +
+        'What are we missing? Would any additional data be needed? Do you see any gaps in the AI system process or in how ' +
+        'the outputs are used? Give us a few observations about the process and one to three recommendations about how to ' +
+        'improve it, keeping in mind appropriate constraints on what the AI system does and appropriate processes for ' +
+        'human review of the outputs.';
     },
 
     p4(ctx) {
@@ -532,8 +521,7 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
       return `I'm assessing the feasibility of using AI in this process: ${consensusOf(ctx.uc, 'p3') || BLANK}\n\n` +
         `I want to understand potential challenges with my data sources. The input data is: ${v(f.data)}\n\n` +
         'What challenges might we expect if using this data to feed the process described? Identify three potential ' +
-        'challenges, prioritize which is the most serious, and provide one to three recommendations on how to mitigate it. ' +
-        `${FINDINGS}\n\n` + concise('3 to 5 bullets');
+        'challenges, prioritize which is the most serious, and provide one to three recommendations on how to mitigate it.';
     },
 
     p5(ctx) {
@@ -541,8 +529,7 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
       return `We are considering this AI use case: ${consensusOf(ctx.uc, 'p3') || BLANK}\n\n` +
         `We anticipate the following risks and mitigations:\n${v(f.risks)}\n\n` +
         'What are we missing? What is the worst thing that happens if this goes wrong? Create a summarized list of risks, ' +
-        'prioritize them by importance, and provide one or two mitigation actions to consider for each. ' +
-        `${FINDINGS}\n\n` + concise('3 to 5 bullets');
+        'prioritize them by importance, and provide one or two mitigation actions to consider for each.';
     },
 
     p6(ctx) {
@@ -552,19 +539,9 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
         `I want this process to improve ${v(f.outcomes)}${kinds ? ` (kind of improvement: ${kinds})` : ''}.\n\n` +
         'Identify a set of specific metrics I could measure to track whether these outcomes are actually happening. ' +
         'Make a recommendation about how to collect the data and at what frequency, keeping in mind that it should be ' +
-        'low-lift and enable us to compare the new process with the old process.\n\n' +
-        concise('3 to 5 bullets');
+        'low-lift and enable us to compare the new process with the old process.';
     }
   };
-
-  // Optional: ask the AI to tighten the statement the team wrote themselves.
-  function polishPrompt(statement, original) {
-    return `Here is the AI opportunity as we first described it:\n${v(original)}\n\n` +
-      `Here is our revised opportunity statement, which we wrote after your questions:\n${v(statement)}\n\n` +
-      'Clean up and strengthen my revised statement. Keep my original intent and wording where it works, and fold in only ' +
-      'the gaps I chose to address in it. Do not add new ideas of your own. Give me the revised statement itself, not a ' +
-      'list of suggestions.\n\n' + concise('3 to 4 sentences');
-  }
 
   function buildPrompt(phaseId, ctx) {
     const b = BUILDERS[phaseId];
@@ -589,12 +566,13 @@ const module = { exports: {} }; const require = (p) => __mods[p]; const process 
     return lines.join('\n\n');
   }
 
-  return { buildPrompt, polishPrompt, contextPrimer, BLANK };
+  return { buildPrompt, contextPrimer, BLANK };
 });
 
 return module.exports;
 })();
 window.Prompts = __mods['./prompts'];
+window.Exports = null; // set after the exports module loads
 __mods['./exports'] = (function () {
 const module = { exports: {} }; const require = (p) => __mods[p]; const process = { env: {} };
 'use strict';
@@ -673,20 +651,66 @@ function progress(uc) {
   return { done: ids.filter((id) => clean(ucPhase(uc, id).consensus)).length, total: ids.length };
 }
 
+const fld = (p, id) => clean((p.fields || {})[id]);
+const bullets = (arr) => arr.map((x) => `- ${x}`).join('\n');
+
+function capabilityList(p3) {
+  const caps = ((p3.fields || {}).capabilities) || [];
+  const other = fld(p3, 'capabilitiesOther');
+  return { caps, other };
+}
+
+// Required content for a formal submission. Non-blocking: callers warn, never stop.
+function missingItems(uc) {
+  const p2 = ucPhase(uc, 'p2'), p3 = ucPhase(uc, 'p3'), p5 = ucPhase(uc, 'p5'), p6 = ucPhase(uc, 'p6');
+  const { caps, other } = capabilityList(p3);
+  const checks = [
+    ['Business Problem / Opportunity', fld(p2, 'pain') || clean(p2.consensus)],
+    ['AI Opportunity', fld(p3, 'actions') || clean(p3.consensus)],
+    ['Human-Led Activities', fld(p3, 'humanLed')],
+    ['AI Functionalities Required', caps.length || other],
+    ['Risks & Mitigations', fld(p5, 'risks') || clean(p5.consensus)],
+    ['Intended Outcomes', fld(p6, 'outcomes') || clean(p6.consensus)]
+  ];
+  return checks.filter((c) => !c[1]).map((c) => c[0]);
+}
+const MISSING_WARNING = 'This use case is missing information that may be required for formal review or submission.';
+
 function buildBrief(ws, uc) {
   const p2 = ucPhase(uc, 'p2'), p3 = ucPhase(uc, 'p3'), p4 = ucPhase(uc, 'p4'), p5 = ucPhase(uc, 'p5'), p6 = ucPhase(uc, 'p6');
   const goals = (p2.fields.goalTypes || []).join(', ');
-  const pr = progress(uc);
+  const { caps, other } = capabilityList(p3);
   const md = [];
-  md.push(`# AI Use Case Brief: ${uc.name}`);
-  md.push(`**Team:** ${ws.teamName} · **Phases agreed:** ${pr.done} of ${pr.total}`);
-  if (goals) md.push(`**Improvement goal:** ${goals}`);
-  md.push('## 1. The process today', orTbd(p2.consensus || p2.fields.steps));
-  md.push('## 2. The AI opportunity', orTbd(p3.consensus));
-  md.push('## 3. Data readiness', orTbd(p4.consensus));
-  md.push('## 4. Risks and mitigations', orTbd(p5.consensus));
-  md.push('## 5. Intended outcomes and metrics', orTbd(p6.consensus));
-  md.push('---', '*Drafted by the team in the AI Use Case Sandbox. A human reviewed each phase; treat AI suggestions as input, not decisions.*');
+  const sec = (title, body) => md.push(`## ${title}`, body);
+  md.push(`# AI Use Case: ${uc.name}`);
+
+  const summary = [`**Team:** ${ws.teamName}`];
+  if (fld(p2, 'processName')) summary.push(`**Process:** ${fld(p2, 'processName')}`);
+  if (goals) summary.push(`**Improvement goal:** ${goals}`);
+  sec('AI Use Case Summary', summary.join('\n\n'));
+  sec('Business Area', orTbd(fld(p2, 'businessArea')));
+  sec('Business Problem / Opportunity', orTbd(fld(p2, 'pain') || p2.consensus));
+  sec('Current Process', orTbd(p2.consensus || fld(p2, 'steps')));
+
+  md.push('## AI Opportunity');
+  md.push('### Overview', orTbd(fld(p3, 'actions') || p3.consensus));
+  md.push('### Inputs', orTbd(fld(p3, 'inputs')));
+  md.push('### Reference Data', orTbd(fld(p3, 'refData')));
+  md.push('### Outputs', orTbd(fld(p3, 'outputs')));
+
+  sec('Use Case Boundary', orTbd(fld(p3, 'boundary')));
+  sec('Human-Led Activities', orTbd(fld(p3, 'humanLed')));
+  const capParts = [];
+  if (caps.length) capParts.push(bullets(caps));
+  if (other) capParts.push(`**Additional requirements:** ${other}`);
+  sec('AI Functionalities Required', capParts.length ? capParts.join('\n\n') : orTbd(''));
+  sec('Data Readiness Considerations', orTbd(p4.consensus || fld(p4, 'data')));
+  sec('Risks and Mitigations', orTbd(p5.consensus || fld(p5, 'risks')));
+  sec('Intended Outcomes', orTbd(p6.consensus || fld(p6, 'outcomes')));
+
+  const notes = [['Current process', p2], ['AI opportunity', p3], ['Data readiness', p4], ['Risks and mitigations', p5], ['Intended outcomes', p6]]
+    .filter(([, p]) => clean(p.consensus)).map(([label, p]) => `**${label}:** ${clean(p.consensus)}`);
+  sec('Consensus Notes', notes.length ? notes.join('\n\n') : orTbd(''));
   return md.join('\n\n');
 }
 
@@ -737,10 +761,11 @@ const EXPORT_TYPES = {
   portfolio: { label: 'Use case portfolio', perUseCase: false }
 };
 
-module.exports = { buildBrief, buildPortfolio, printableHtml, wordDocument, progress, EXPORT_TYPES };
+module.exports = { buildBrief, buildPortfolio, printableHtml, wordDocument, progress, missingItems, MISSING_WARNING, EXPORT_TYPES };
 
 return module.exports;
 })();
+window.Exports = __mods['./exports'];
 // Browser stand-in for server.js. Same endpoints and rules, but data lives in
 // localStorage.
 (function () {
@@ -783,7 +808,7 @@ return module.exports;
   const routes = [];
   const route = (method, pattern, fn) => routes.push({ method, re: new RegExp('^' + pattern.replace(/:\w+/g, '([^/]+)') + '$'), fn });
 
-  route('GET', '/api/template', () => ({ phases: PHASES, buckets: BUCKETS, goalTypes: T.GOAL_TYPES, outcomeTypes: T.OUTCOME_TYPES, exportTypes: X.EXPORT_TYPES }));
+  route('GET', '/api/template', () => ({ phases: PHASES, buckets: BUCKETS, goalTypes: T.GOAL_TYPES, capabilities: T.AI_CAPABILITIES, outcomeTypes: T.OUTCOME_TYPES, exportTypes: X.EXPORT_TYPES }));
   route('GET', '/api/workspaces', () => Object.values(store.load().workspaces).map(summarize).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
   route('POST', '/api/workspaces', (m, q, b) => {
     const teamName = str(b.teamName, 120).trim();
@@ -1064,7 +1089,7 @@ function renderHome() {
           <ol style="padding-left:1.2em;font-size:0.92rem;color:var(--muted)">
             <li><strong>Candidates:</strong> brainstorm processes with friction and shortlist a few.</li>
             <li>For each shortlisted use case, work through five phases: <strong>process, AI opportunity, data, risks, outcomes.</strong></li>
-            <li>Every phase has the same three steps: <strong>Describe it</strong> (what you know), <strong>Ask the AI</strong> (copy the prompt and let it poke holes), <strong>Decide</strong> (record what you agree).</li>
+            <li>Every phase has the same three steps: <strong>Huddle</strong> (capture what you know), <strong>Interrogate</strong> (copy the prompt into your AI and let it poke holes), <strong>Consensus</strong> (record what you agree).</li>
             <li>Export a one-page brief per use case, or a portfolio view.</li>
           </ol>
         </div>
@@ -1120,7 +1145,7 @@ function renderDashboard() {
       <p class="lead">Start with candidate processes, shortlist a few, then take each through five phases.</p>
       <div class="section-row" id="go-ideas">
         <div class="num">1</div>
-        <div class="title">${esc(p1.title)}<small>${ws.ideas.length} idea${ws.ideas.length === 1 ? '' : 's'} on the board · ${ws.ideas.filter((i) => i.selected).length} ticked</small></div>
+        <div class="title">${esc(p1.title)}<small>${ws.ideas.length} idea${ws.ideas.length === 1 ? '' : 's'} on the board · ${ws.ideas.filter((i) => i.selected).length} ticked for interrogation</small></div>
         <span class="pill ${p1Status}">${pillLabel[p1Status]}</span>
       </div>
     </div>
@@ -1131,11 +1156,12 @@ function renderDashboard() {
     </div>
     <div class="card">
       <h2>Working with your AI</h2>
-      <p class="lead">This app writes the prompts. You run them in your organization's approved AI tool.</p>
+      <p class="lead">This app writes the prompts. You run them in whichever AI tool your organization has approved, including one running on your own machine, then bring the answers back.</p>
       <ol style="font-size:0.92rem;color:var(--muted)">
-        <li>Start <strong>one AI conversation per use case</strong> and stay in it.</li>
-        <li>In <strong>Ask the AI</strong>, press <strong>Copy prompt</strong>, paste it into the AI, and answer its questions.</li>
-        <li>Write down what your team agrees in <strong>Decide</strong>.</li>
+        <li>Open your approved AI tool and start <strong>one conversation per use case</strong>. Keep working in it from phase to phase.</li>
+        <li>In each phase's <strong>Interrogate</strong> step, press <strong>Copy prompt</strong> and paste it into the AI. Answer its questions and push back.</li>
+        <li>Paste the response into the app so it stays with your notes, then agree the result as a team in <strong>Consensus</strong>.</li>
+        <li>Starting a fresh chat later? Use <strong>Copy "story so far"</strong> to bring the new chat up to speed.</li>
       </ol>
     </div>`;
 
@@ -1178,7 +1204,7 @@ function renderField(f, value) {
 }
 
 function tickMessage(n) {
-  return n > 4 ? `${n} ideas ticked. Three or four gets sharper questions from the AI.` : 'Tick the ideas you want to work on, on the board above.';
+  return n > 4 ? `${n} ideas ticked. Three or four gets sharper questions from the AI.` : 'Tick the ideas you want to interrogate on the board above.';
 }
 
 function renderIdeaBoard() {
@@ -1206,7 +1232,6 @@ function renderPhasePanel(phase, uc) {
   const huddleBody = phase.scope === 'workspace'
     ? renderIdeaBoard()
     : phase.huddle.fields.map((f) => renderField(f, st.fields[f.id])).join('') +
-      (phase.id === 'p2' ? `<details class="hint"><summary>Short template for your steps</summary><pre id="steps-template" style="white-space:pre-wrap;margin:6px 0">Inputs:\nSteps:\nWho reviews:\nOutput:</pre><button type="button" class="secondary" id="copy-steps-template">Copy template</button></details>` : '') +
       (phase.huddle.prompts ? `<details class="hint"><summary>Questions to prompt your thinking</summary><ul class="risk-list">${phase.huddle.prompts.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></details>` : '');
 
   const earlier = phase.id === 'p4' || phase.id === 'p5' || phase.id === 'p6';
@@ -1230,49 +1255,41 @@ function renderPhasePanel(phase, uc) {
     </div>
 
     <div class="card step huddle">
-      <span class="step-tag">Step 1 · Describe it</span>
+      <span class="step-tag">Step 1 · Huddle</span>
       <p class="lead">${esc(phase.huddle.intro)}</p>
       ${huddleBody}
       <div class="save-flash" id="flash-fields" style="opacity:0"></div>
     </div>
 
     <div class="card step interrogate">
-      <span class="step-tag">Step 2 · Ask the AI</span>
+      <span class="step-tag">Step 2 · Interrogate</span>
       <p class="lead">${esc(phase.interrogate.intro)}</p>
       ${p1Note}${missingP3}
+      <label class="field-label" for="prompt-box">Prompt <span style="font-weight:400;color:var(--muted)">(built from your Step 1 answers; edit freely)</span></label>
+      <textarea id="prompt-box" class="prompt-box">${esc(promptText)}</textarea>
       <div class="btn-row">
         <button class="primary" id="copy-prompt">Copy prompt</button>
+        <button class="secondary" id="copy-primer">Copy "story so far"</button>
+        <button class="subtle" id="reset-prompt" ${key in state.promptEdits ? '' : 'hidden'}>Reset to generated prompt</button>
         <span class="save-flash" id="flash-copy" style="opacity:0;align-self:center"></span>
       </div>
-      <div class="help-text"><strong>These prompts are a starting point. Edit them to fit your situation.</strong> Paste into your approved AI tool and stay in the same conversation.</div>
-      <details class="hint"><summary>See or edit the prompt</summary>
-        <textarea id="prompt-box" class="prompt-box" aria-label="Prompt">${esc(promptText)}</textarea>
-        <div class="btn-row">
-          <button class="subtle" id="reset-prompt" ${key in state.promptEdits ? '' : 'hidden'}>Reset to generated prompt</button>
-          <button class="secondary" id="copy-primer">Copy "story so far"</button>
-        </div>
-        <div class="help-text">Starting a new chat? Paste the "story so far" first so the AI knows what you have already agreed.</div>
-      </details>
-      <label class="field-label" for="pasted">The AI's response <span style="font-weight:400;color:var(--muted)">(optional: paste it here to keep it with your notes)</span></label>
-      <textarea id="pasted" rows="6" placeholder="Paste the response here, including any follow-up exchanges worth keeping.">${esc(st.pasted)}</textarea>
+      <div class="help-text">Paste the prompt into your approved AI tool and keep going in the same conversation. If you start a fresh chat, paste the "story so far" first so it knows what you have already agreed.</div>
+      <label class="field-label" for="pasted">The AI's response <span style="font-weight:400;color:var(--muted)">(paste it here to keep it with your notes)</span></label>
+      <textarea id="pasted" rows="9" placeholder="Paste the response here, including any follow-up exchanges worth keeping.">${esc(st.pasted)}</textarea>
       <div class="save-flash" id="flash-pasted" style="opacity:0"></div>
     </div>
 
     <div class="card step consensus">
-      <span class="step-tag">Step 3 · Decide</span>
+      <span class="step-tag">Step 3 · Consensus</span>
       <label class="field-label" for="consensus" style="margin-top:0">${esc(phase.consensus.label)}</label>
       <div class="help-text">${esc(phase.consensus.help)}</div>
       <textarea id="consensus" rows="7">${esc(st.consensus)}</textarea>
       <div class="save-flash" id="flash-consensus" style="opacity:0"></div>
-      ${phase.id === 'p3' ? `<details class="hint"><summary>Optional: ask the AI to tighten your rewrite</summary>
-        <div class="help-text">Copies a prompt that asks the AI to clean up and strengthen the statement above, keeping your intent and returning a revised statement. Paste the result back into the box above only if you agree with it.</div>
-        <button type="button" class="secondary" id="copy-polish">Copy polish prompt</button> <span class="save-flash" id="flash-polish" style="opacity:0"></span></details>` : ''}
       <div class="btn-row">
         ${phase.id === 'p1' ? `<button class="primary" id="promote">Promote ticked ideas to use cases</button>` : ''}
         ${nextPhase ? `<button class="primary" id="next-phase">Continue to Phase ${nextPhase.number} →</button>` : ''}
         ${uc && !nextPhase ? `<button class="primary" id="to-export">Go to Export Center →</button>` : ''}
       </div>
-      ${uc && !nextPhase ? FEEDBACK_LINK : ''}
     </div>`;
 }
 
@@ -1291,7 +1308,7 @@ function bindPhasePanel(phase, uc) {
   // Huddle fields (phases 2-6)
   if (phase.scope === 'usecase') {
     const saveFields = debounce(async () => {
-      try { st.fields = await put({ fields: st.fields }).then((s) => s.fields); flashSaved(document.getElementById('flash-fields')); } catch (e) { alert(e.message); }
+      try { st.fields = await put({ fields: st.fields }).then((s) => s.fields); flashSaved(document.getElementById('flash-fields')); refreshCaptureWarn(); } catch (e) { alert(e.message); }
     }, 600);
     for (const el of $main.querySelectorAll('[data-field]')) {
       el.addEventListener('input', () => { st.fields[el.dataset.field] = el.value; refreshPrompt(); saveFields(); });
@@ -1338,17 +1355,6 @@ function bindPhasePanel(phase, uc) {
     pill.className = `pill ${filled(st.consensus) ? 'complete' : 'not_started'}`;
     saveConsensus();
   });
-
-  const tpl = document.getElementById('copy-steps-template');
-  if (tpl) tpl.onclick = () => copyWith(document.getElementById('steps-template').textContent, 'Template');
-  const polish = document.getElementById('copy-polish');
-  if (polish) polish.onclick = async () => {
-    const f = phaseState(phase, uc).fields || {};
-    if (!filled(st.consensus)) { const pf = document.getElementById('flash-polish'); flashSaved(pf); pf.textContent = 'Write your revised statement above first.'; return; }
-    const original = `Data inputs: ${f.inputs || ''}\nWhat the AI does: ${f.actions || ''}\nOutputs: ${f.outputs || ''}\nWhat happens next: ${f.handoff || ''}`;
-    const ok = await copyText(Prompts.polishPrompt(st.consensus, original));
-    const pf = document.getElementById('flash-polish'); flashSaved(pf); pf.textContent = ok ? 'Polish prompt copied' : 'Copy failed. Select the text and copy it manually.';
-  };
 
   const next = document.getElementById('next-phase');
   if (next) next.onclick = () => {
@@ -1417,11 +1423,17 @@ function captureItems(uc) {
   return ucPhases().map((p) => `<article class="capture-item${p.id === state.phaseId ? ' current' : ''}"><h3>${p.number}. ${esc(p.title)}</h3><p>${esc(phaseState(p, uc).consensus.trim() || 'Awaiting team consensus.')}</p></article>`).join('');
 }
 
+function missingNoticeHtml(uc) {
+  const m = Exports.missingItems(uc);
+  return m.length ? `<div class="notice warn">${esc(Exports.MISSING_WARNING)}<br><small>Missing: ${esc(m.join(', '))}. You can still export.</small></div>` : '';
+}
+
 function captureHtml(uc) {
   const n = ucProgress(uc);
   return `<aside class="card capture" aria-label="Use case capture">
     <div class="capture-head"><h2>Use Case Capture</h2><p id="capture-count" aria-live="polite">${n} of 5 phases agreed.</p><div class="progress-wrap"><div class="progress-bar" id="capture-bar" style="width:${n * 20}%"></div></div></div>
     <div class="capture-scroll" id="capture-items" role="region" aria-label="Agreed phase text" tabindex="0">${captureItems(uc)}</div>
+    <div id="capture-warn">${missingNoticeHtml(uc)}</div>
     <div class="capture-actions"><a class="btnlike" data-export href="${wsUrl(`/export/brief?useCaseId=${uc.id}`)}" target="_blank">Open brief</a><a class="btnlike" data-export href="${wsUrl(`/export/brief?useCaseId=${uc.id}&format=doc`)}">Export Word</a></div>
   </aside>`;
 }
@@ -1435,6 +1447,12 @@ function refreshStepper() {
   document.getElementById('capture-count').textContent = `${n} of 5 phases agreed.`;
   document.getElementById('capture-bar').style.width = `${n * 20}%`;
   document.getElementById('capture-items').innerHTML = captureItems(uc);
+  refreshCaptureWarn();
+}
+
+function refreshCaptureWarn() {
+  const uc = currentUc(); const el = document.getElementById('capture-warn');
+  if (uc && el) el.innerHTML = missingNoticeHtml(uc);
 }
 
 function bindStepper() {
@@ -1493,22 +1511,21 @@ function renderExport() {
   const ws = state.ws;
   const ucs = Object.values(ws.useCases);
   const rows = ucs.map((uc) => `
-    <div class="doc-item"><div class="meta"><div class="name">${esc(uc.name)}</div><div class="sub">${ucProgress(uc)} of 5 phases agreed</div></div>
+    <div class="doc-item"><div class="meta"><div class="name">${esc(uc.name)}</div><div class="sub">${ucProgress(uc)} of 5 phases agreed</div>${missingNoticeHtml(uc)}</div>
       <a class="btnlike" data-export href="${wsUrl(`/export/brief?useCaseId=${uc.id}`)}" target="_blank">View / print</a>
       <a class="btnlike" data-export href="${wsUrl(`/export/brief?useCaseId=${uc.id}&format=doc`)}">Word</a>
       <a class="btnlike" data-export href="${wsUrl(`/export/brief?useCaseId=${uc.id}&format=md`)}">Markdown</a></div>`).join('');
   $main.innerHTML = `
     <div class="card">
       <h2>Use case briefs</h2>
-      <p class="lead">One page per use case: process, AI opportunity, data readiness, risks, and intended outcomes. Open it and print or save as PDF from your browser.</p>
+      <p class="lead">One document per use case, laid out to match the Use Case Challenge Form. Open it and print or save as PDF from your browser.</p>
       ${rows || '<div class="empty-state">No use cases yet.</div>'}
     </div>
     <div class="card">
       <h2>Portfolio</h2>
       <p class="lead">All use cases side by side, plus the ideas still on the shelf. Good for a leadership conversation about what to pursue first.</p>
       <div class="btn-row" style="margin-top:0"><a class="btnlike" data-export href="${wsUrl('/export/portfolio')}" target="_blank">View / print</a><a class="btnlike" data-export href="${wsUrl('/export/portfolio?format=doc')}">Word</a><a class="btnlike" data-export href="${wsUrl('/export/portfolio?format=md')}">Markdown</a></div>
-    </div>
-    <div class="card">${FEEDBACK_LINK}</div>`;
+    </div>`;
 }
 
 // ---------------------------------------------------------------------------
